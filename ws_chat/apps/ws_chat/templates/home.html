@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="/media/js/jquery.cookie.js"></script>
+    </head>
+    <body id="chat-container">
+        <form action="/" method="POST" id="login-form">
+            Name: <input name="nickname" type="text" value="Ivan" id="nickname"><br><button type="submit">Log in</button>
+                  <input id="time_offset" name="time_offset" type="hidden" value=><br>
+        </form>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var now = new Date();
+                $("#time_offset").value = now.getTimezoneOffset();
+                $("#login-form").submit(function(){
+                    $.cookie("nickname", $("#login-form #nickname").val());
+                });
+            });
+
+
+        </script>
+    </body>
+</html>

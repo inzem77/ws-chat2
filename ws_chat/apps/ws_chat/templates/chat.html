@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="/media/js/jquery.cookie.js"></script>
+    </head>
+    <body id="chat-container">
+        <div>
+            <input id="message-field" type="text"> <button onclick="do_post()">&gt;</button>
+        </div>
+        <div id="info">
+            {{ test|myfilter }}
+            {% for i in sql_data %}
+                <div>{{ '[' }} {{ i|get("dt") }} {{ ']' }}
+                    {% if redis_user_data_dict[i.get("session_key")] %}
+                        {{ redis_user_data_dict[i.get("session_key")]['session']['nickname'] }}
+                    {% else %}
+                        {{ redis_admin_data_dict[i.get("session_key")]['session']['nickname'] }}
+                    {% endif %}
+                    {{ i|get("id") }}</div>
+            {% endfor %}
+
+        </div>
+        <hr>
+        <script type="text/javascript">
+            var ws_url = "ws://" + window.location.hostname + ":" + window.location.port + window.location.pathname + "ws/";
+            //var ws_url = "ws://"+ window.location.hostname + ":" + window.location.port +"/test/ws/";
+            console.log("ws_url="+ws_url);
+            var container = document.getElementById("chat-container");
+            var socket = new WebSocket(ws_url);
+            var div_info = document.getElementById("info");
+            var text_info = document.createTextNode(ws_url);
+            div_info.appendChild(text_info);
+            socket.onmessage = function (event) {
+                var element = document.createElement('div');
+                var data = JSON.parse(event.data)
+                var now = new Date()
+                var text = document.createTextNode("[" + now.getHours() + ":" + now.getMinutes() + "] " + data.nickname +":" + data.message);
+                console.log(text)
+                element.appendChild(text);
+                container.appendChild(element);
+            }
+            socket.onclose = function (event) {
+                var element = document.createElement('div');
+                var text = document.createTextNode('Websocket closed. Please reload.');
+                element.appendChild(text);
+                element.setAttribute('style', 'color:red;');
+                container.appendChild(element);
+            }
+            function do_post() {
+                var myRequest = new XMLHttpRequest();
+                var message_field_elem = document.getElementById("message-field");
+                var element = document.createElement('div');
+                var now = new Date()
+                var text = document.createTextNode("[" + now.getHours() + ":" + now.getMinutes() + "] " + $.cookie("nickname") +":" + message_field_elem.value);
+                element.appendChild(text);
+                container.appendChild(element);
+                myRequest.open('POST', window.location)
+                myRequest.send(JSON.stringify({ 'message': message_field_elem.value }));
+            }
+        </script>
+    </body>
+</html>

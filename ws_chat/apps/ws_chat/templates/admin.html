@@ -1,0 +1,26 @@
+<html>
+    <body id="chat-container">
+        <form action="/admin/" method="POST">
+            Host: <input name="host" type="text" value="localhost"><br><button type="submit">Connect to</button>
+        </form>
+            {% if history %}
+                {% if host %}
+                    <h3>Юзеры</h3>
+                    <ul >
+                    {% for key, value in history[host].items() %}
+                        <li><a href="/admin/{{ host }}/{{ key }}/">{{ key }}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <h3>Хосты</h3>
+                    <ul id="hosts">
+                    {% for key, value in history.items() %}
+                        <li><a href="/admin/{{ key }}/">{{ key }}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endif %}
+
+        </ul>
+    </body>
+</html>
